@@ -18,26 +18,25 @@ namespace SampleJobScheduler
 
             IContainer container = DependencyInjection.Build();
 
-            HostFactory.Run(configurator => 
+
+            HostFactory.Run(hostConfigurator => 
             {
                 // Set windows service properties
-                configurator.SetServiceName("SampleSchedulerService");
-                configurator.SetDisplayName("Sample Service");
-                configurator.SetDescription("Executes Job.");
-                                
-                configurator.RunAsLocalSystem();
+                hostConfigurator.SetServiceName("SampleSchedulerService");
+                hostConfigurator.SetDisplayName("Sample Service");
+                hostConfigurator.SetDescription("Executes Job.");
 
-                configurator.UseLog4Net();
-                configurator.UseAutofacContainer(container);
-                configurator.Service<SchedulerService>(hostConfigurator => 
+                hostConfigurator.RunAsLocalSystem();
+                // Configure Log4Net with Topself
+                hostConfigurator.UseLog4Net();
+                hostConfigurator.UseAutofacContainer(container);
+                hostConfigurator.Service<SchedulerService>(serviceConfigurator => 
                 {
-                    hostConfigurator.ConstructUsing(hostSettings => container.Resolve<SchedulerService>());                    
-                    hostConfigurator.WhenStarted(s => s.Start());
-                    hostConfigurator.WhenStopped(s => s.Shutdown());
+                    serviceConfigurator.ConstructUsing(hostSettings => container.Resolve<SchedulerService>());
+                    serviceConfigurator.WhenStarted(s => s.Start());
+                    serviceConfigurator.WhenStopped(s => s.Shutdown());
                 });
-            });
-
-            Console.ReadLine();
+            });            
         }
     }
 }

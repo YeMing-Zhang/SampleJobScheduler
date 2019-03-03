@@ -4,6 +4,9 @@ using Quartz;
 
 namespace SampleJobScheduler
 {
+    /// <summary>
+    /// Sample Job that executes based on schedule defined in quartzjobconfig.xml
+    /// </summary>
     public class SampleJob : IJob
     {
         private readonly ILog _log;
@@ -16,6 +19,8 @@ namespace SampleJobScheduler
         async Task IJob.Execute(IJobExecutionContext context)
         {
             _log.Info("Execute Job is working");
+
+            // Write background job logic. All the business logic goes here.
 
             await Task.FromResult(0);
         }
